@@ -1,14 +1,7 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Card, CardContent, Paper } from "@mui/material";
 import BackButton from "./BackButton";
 
-function FullCharacterInfo({ hero, onBack, onGoMenu }) {
+function FullCharacterInfo({ hero, onGoMenu }) {
   if (!hero) return null;
 
   const imageUrl =
@@ -17,7 +10,16 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
 
   return (
     <Box>
-      <Paper elevation={2} sx={{ p: 2, mb: 4 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          mb: 4,
+          borderRadius: 3,
+          backgroundColor: "#fff",
+          border: "1px solid rgba(0,0,0,0.04)",
+        }}
+      >
         <img
           src={imageUrl}
           alt={hero.name}
@@ -28,7 +30,8 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
             objectFit: "contain",
             display: "block",
             margin: "0 auto",
-            borderRadius: 8,
+            borderRadius: 12,
+            boxShadow: "0 6px 16px rgba(0,0,0,0.06)",
           }}
           onError={(e) => {
             e.target.onerror = null;
@@ -37,7 +40,18 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         />
       </Paper>
 
-      <Typography variant="h3" fontWeight="bold" align="center" gutterBottom>
+      <Typography
+        variant="h3"
+        fontWeight="bold"
+        align="center"
+        gutterBottom
+        sx={{
+          fontSize: { xs: "2rem", md: "2.75rem" },
+          lineHeight: 1.2,
+          mb: 0.5,
+          color: "primary.main",
+        }}
+      >
         {hero.name}
       </Typography>
 
@@ -47,12 +61,49 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
           color="text.secondary"
           align="center"
           gutterBottom
+          sx={{
+            fontSize: { xs: "1.2rem", md: "1.5rem" },
+            fontWeight: 400,
+          }}
         >
           {hero.biography.fullName}
         </Typography>
       )}
 
-      {/* Biography Section */}
+      <Card
+        sx={{
+          mb: 4,
+          borderRadius: 3,
+          border: "1px solid rgba(0,0,0,0.04)",
+        }}
+      >
+        <CardContent>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              mb: 2,
+              color: "primary.main",
+            }}
+          >
+            Character Overview
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{
+              lineHeight: 1.8,
+              fontSize: "1.05rem",
+            }}
+          >
+            {hero.longDescription ||
+              hero.description ||
+              `Detailed information about ${hero.name}.`}
+          </Typography>
+        </CardContent>
+      </Card>
+
       <Section title="Biography">
         <InfoItem
           label="Full Name"
@@ -84,7 +135,6 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         />
       </Section>
 
-      {/* Appearance Section */}
       <Section title="Appearance">
         <InfoItem label="Gender" value={hero.appearance?.gender || "Unknown"} />
         <InfoItem label="Race" value={hero.appearance?.race || "Unknown"} />
@@ -106,7 +156,6 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         />
       </Section>
 
-      {/* Power Stats Section */}
       <Section title="Power Statistics">
         <PowerStat name="Intelligence" value={hero.powerstats?.intelligence} />
         <PowerStat name="Strength" value={hero.powerstats?.strength} />
@@ -116,7 +165,6 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         <PowerStat name="Combat" value={hero.powerstats?.combat} />
       </Section>
 
-      {/* Work Section */}
       <Section title="Work & Occupation">
         <InfoItem
           label="Occupation"
@@ -128,7 +176,6 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         />
       </Section>
 
-      {/* Connections Section */}
       <Section title="Connections">
         <InfoItem
           label="Group Affiliation"
@@ -140,31 +187,40 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
         />
       </Section>
 
-      {/* Extra Features Section (if any) */}
       {hero.features && hero.features.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
+        <Box sx={{ mt: 5 }}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            gutterBottom
+            sx={{
+              fontSize: "1.5rem",
+            }}
+          >
             Notable Traits
           </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
             {hero.features.map((feature, idx) => (
-              <Chip key={idx} label={feature} sx={{ m: 0.5 }} />
+              <Paper
+                key={idx}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                  backgroundColor: "primary.light",
+                  color: "primary.contrastText",
+                  fontWeight: 500,
+                }}
+              >
+                {feature}
+              </Paper>
             ))}
           </Box>
         </Box>
       )}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 2,
-          mt: 4,
-          flexWrap: "wrap",
-        }}
-      >
-        <BackButton onClick={onBack} label="Back to Preview" size="large" />
 
-        <BackButton onClick={onGoMenu} label="Back to Menu" size="large" />
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4.5 }}>
+        <BackButton onClick={onGoMenu} label="Back to Menu" />
       </Box>
 
       <Box sx={{ height: 40 }} />
@@ -172,14 +228,32 @@ function FullCharacterInfo({ hero, onBack, onGoMenu }) {
   );
 }
 
-// Helper Components
 function Section({ title, children }) {
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
+    <Box sx={{ mt: 5 }}>
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        gutterBottom
+        sx={{
+          mb: 2.5,
+          fontSize: "1.5rem",
+          color: "text.primary",
+        }}
+      >
         {title}
       </Typography>
-      <Paper elevation={1}>{children}</Paper>
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          border: "1px solid rgba(0,0,0,0.06)",
+          backgroundColor: "#fff",
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </Paper>
     </Box>
   );
 }
@@ -188,13 +262,15 @@ function InfoItem({ label, value }) {
   return (
     <Box
       sx={{
-        p: 2,
-        borderBottom: "1px solid #e0e0e0",
+        p: 2.5,
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        backgroundColor: "#fff",
+        transition: "background-color 0.2s ease",
+        "&:hover": {
+          backgroundColor: "#fafafa",
+        },
         "&:last-child": {
           borderBottom: "none",
-        },
-        "&:hover": {
-          backgroundColor: "#f9f9f9",
         },
       }}
     >
@@ -203,15 +279,29 @@ function InfoItem({ label, value }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: 1,
         }}
       >
-        <Typography variant="subtitle1" fontWeight={600} color="#1976d2">
+        <Typography
+          variant="subtitle1"
+          fontWeight={600}
+          sx={{
+            color: "primary.dark",
+            fontSize: "1rem",
+          }}
+        >
           {label}
         </Typography>
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ textAlign: "right", maxWidth: "60%" }}
+          sx={{
+            textAlign: "right",
+            maxWidth: "65%",
+            wordBreak: "break-word",
+            fontSize: "0.95rem",
+          }}
         >
           {value}
         </Typography>
@@ -231,13 +321,15 @@ function PowerStat({ name, value }) {
   return (
     <Box
       sx={{
-        p: 2,
-        borderBottom: "1px solid #e0e0e0",
+        p: 2.5,
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        backgroundColor: "#fff",
+        transition: "background-color 0.2s ease",
+        "&:hover": {
+          backgroundColor: "#fafafa",
+        },
         "&:last-child": {
           borderBottom: "none",
-        },
-        "&:hover": {
-          backgroundColor: "#f9f9f9",
         },
       }}
     >
@@ -246,30 +338,49 @@ function PowerStat({ name, value }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 1,
+          mb: 1.5,
         }}
       >
-        <Typography variant="subtitle1" fontWeight={600} color="#1976d2">
+        <Typography
+          variant="subtitle1"
+          fontWeight={600}
+          sx={{
+            color: "primary.dark",
+            fontSize: "1rem",
+          }}
+        >
           {name}
         </Typography>
-        <Typography variant="body1" fontWeight="bold" color="text.secondary">
+        <Typography
+          variant="body1"
+          fontWeight="bold"
+          color="text.secondary"
+          sx={{
+            fontSize: "1rem",
+          }}
+        >
           {value || "?"}
         </Typography>
       </Box>
       <Box
         sx={{
-          height: 6,
-          backgroundColor: "#e0e0e0",
-          borderRadius: 3,
+          height: 8,
+          backgroundColor: "#f0f0f0",
+          borderRadius: 4,
           overflow: "hidden",
+          position: "relative",
         }}
       >
         <Box
           sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
             height: "100%",
             width: `${percentage}%`,
             backgroundColor: getStatColor(percentage),
-            transition: "width 0.3s ease",
+            transition: "width 0.4s ease",
+            borderRadius: 4,
           }}
         />
       </Box>
@@ -278,11 +389,11 @@ function PowerStat({ name, value }) {
 }
 
 function getStatColor(value) {
-  if (value >= 90) return "#4caf50"; // Green - very high
-  if (value >= 75) return "#8bc34a"; // Light green
-  if (value >= 60) return "#ffc107"; // Yellow - good
-  if (value >= 40) return "#ff9800"; // Orange - average
-  return "#f44336"; // Red - low
+  if (value >= 90) return "#81c784";
+  if (value >= 75) return "#a5d6a7";
+  if (value >= 60) return "#ffb74d";
+  if (value >= 40) return "#ff8a65";
+  return "#e57373";
 }
 
 function formatAlignment(alignment) {

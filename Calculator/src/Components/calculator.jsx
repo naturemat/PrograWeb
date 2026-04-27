@@ -19,7 +19,6 @@ function Calculator({ setView }) {
 
   const calculate = () => {
     try {
-      // eslint-disable-next-line no-eval
       const result = eval(input);
       setInput(result.toString());
     } catch {
@@ -35,7 +34,6 @@ function Calculator({ setView }) {
     setInput((prev) => prev.slice(0, -1));
   };
 
-  // Calculator buttons: each row is an array of button labels or objects
   const buttons = [
     [
       { label: "D", action: deleteNumber, color: "warning" },
@@ -69,12 +67,29 @@ function Calculator({ setView }) {
 
   return (
     <Container maxWidth="xs">
-      <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom align="center">
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.5, md: 3.5 },
+          mt: 2,
+          borderRadius: 3,
+          border: "1px solid rgba(0,0,0,0.06)",
+          backgroundColor: "#fff",
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          gutterBottom
+          align="center"
+          sx={{
+            color: "primary.main",
+            fontSize: { xs: "1.5rem", md: "1.75rem" },
+          }}
+        >
           Calculator
         </Typography>
 
-        {/* Display */}
         <TextField
           fullWidth
           value={input}
@@ -82,16 +97,24 @@ function Calculator({ setView }) {
           variant="outlined"
           sx={{
             mb: 3,
-            "& input": {
-              fontSize: "1.5rem",
+            backgroundColor: "#f5f3f0",
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "1.3rem", md: "1.5rem" },
               textAlign: "right",
-              fontFamily: "monospace",
+              fontFamily: '"Roboto Mono", "Courier New", monospace',
+              fontWeight: 500,
+              color: "text.primary",
+            },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&:hover": {
+                backgroundColor: "#ebe8e3",
+              },
             },
           }}
         />
 
-        {/* Buttons Grid */}
-        <Grid container spacing={1}>
+        <Grid container spacing={1.5}>
           {buttons.map((row, rowIdx) =>
             row.map((btn, colIdx) => (
               <Grid item xs={btn.xs || 3} key={`${rowIdx}-${colIdx}`}>
@@ -101,9 +124,25 @@ function Calculator({ setView }) {
                   color={btn.color || "default"}
                   onClick={btn.action}
                   sx={{
-                    py: 2,
-                    fontSize: "1.2rem",
+                    py: { xs: 1.8, md: 2.2 },
+                    fontSize: { xs: "1rem", md: "1.25rem" },
                     fontWeight: 600,
+                    borderRadius: 2,
+                    backgroundColor: (theme) =>
+                      btn.color === "primary"
+                        ? theme.palette.primary.main
+                        : btn.color === "secondary"
+                          ? theme.palette.secondary.main
+                          : btn.color === "success"
+                            ? theme.palette.success.main
+                            : btn.color === "error"
+                              ? theme.palette.error.main
+                              : btn.color === "warning"
+                                ? theme.palette.warning.main
+                                : undefined,
+                    "&:hover": {
+                      filter: "brightness(0.95)",
+                    },
                   }}
                 >
                   {btn.label}
@@ -113,7 +152,7 @@ function Calculator({ setView }) {
           )}
         </Grid>
 
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4.5 }}>
           <BackButton onClick={() => setView(false)} label="Back to Menu" />
         </Box>
       </Paper>

@@ -14,6 +14,7 @@ import { getAllHeroes } from "../api/heroesApi";
 import CharacterCard from "./CharacterCard";
 import CharacterPreview from "./CharacterPreview";
 import FullCharacterInfo from "./FullCharacterInfo";
+import BackButton from "./BackButton";
 
 function CardsSearch({ setView }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,54 +69,111 @@ function CardsSearch({ setView }) {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ textAlign: "center", mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold">
+      <Box sx={{ textAlign: "center", mb: 5 }}>
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          sx={{
+            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            color: "primary.main",
+          }}
+        >
           Heroes Database
         </Typography>
       </Box>
 
-      {/* Search */}
       {viewMode === "list" && (
-        <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            mb: 5,
+            flexDirection: { xs: "column", sm: "row" },
+          }}
+        >
           <TextField
             fullWidth
             placeholder="Search by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            InputProps={{
+              sx: {
+                backgroundColor: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+                },
+              },
+            }}
           />
           <Button
             variant="contained"
             onClick={handleSearch}
             disabled={loading}
             startIcon={<SearchIcon />}
+            sx={{
+              minWidth: { xs: "100%", sm: "auto" },
+              px: 4,
+              boxShadow: "0 4px 12px rgba(124, 154, 156, 0.2)",
+            }}
           >
             Search
           </Button>
         </Box>
       )}
 
-      {/* Error */}
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <Alert
+          severity="error"
+          sx={{
+            mb: 3,
+            borderRadius: 2,
+          }}
+        >
+          {error}
+        </Alert>
+      )}
 
-      {/* Loading */}
       {loading && (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <CircularProgress />
-          <Typography mt={2}>Loading heroes...</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            py: 10,
+          }}
+        >
+          <CircularProgress
+            size={60}
+            sx={{
+              color: "primary.main",
+              mb: 2,
+            }}
+          />
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ fontWeight: 500 }}
+          >
+            Loading heroes...
+          </Typography>
         </Box>
       )}
 
-      {/* GRID RESPONSIVE (CSS GRID REAL) */}
       {viewMode === "list" && !loading && heroes.length > 0 && (
         <Box
           sx={{
             display: "grid",
-            gap: 2,
+            gap: 2.5,
             gridTemplateColumns: {
-              xs: "repeat(2, 1fr)", // 📱 móvil → 2 columnas
-              md: "repeat(4, 1fr)", // 💻 desktop → 4 columnas FIJAS
+              xs: "repeat(2, 1fr)",
+              sm: "repeat(3, 1fr)",
+              md: "repeat(4, 1fr)",
+              lg: "repeat(5, 1fr)",
+            },
+            "@media (max-width:600px)": {
+              gridTemplateColumns: "repeat(2, 1fr)",
             },
           }}
         >
@@ -129,14 +187,29 @@ function CardsSearch({ setView }) {
         </Box>
       )}
 
-      {/* No results */}
       {viewMode === "list" && !loading && heroes.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography>No heroes found</Typography>
+        <Paper
+          sx={{
+            p: 5,
+            textAlign: "center",
+            borderRadius: 3,
+            border: "1px dashed rgba(0,0,0,0.1)",
+            backgroundColor: "#fcfbf9",
+          }}
+        >
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ fontWeight: 500 }}
+          >
+            No heroes found
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Try a different search term
+          </Typography>
         </Paper>
       )}
 
-      {/* Preview */}
       {viewMode === "preview" && selectedHero && (
         <CharacterPreview
           hero={selectedHero}
@@ -145,11 +218,9 @@ function CardsSearch({ setView }) {
         />
       )}
 
-      {/* Full Info */}
       {viewMode === "full" && selectedHero && (
         <FullCharacterInfo
           hero={selectedHero}
-          onBack={handleBack}
           onGoMenu={() => setView(false)}
         />
       )}
