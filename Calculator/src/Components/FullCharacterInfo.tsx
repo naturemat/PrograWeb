@@ -1,10 +1,16 @@
 import { Box, Typography, Card, CardContent, Paper } from "@mui/material";
 import BackButton from "./BackButton";
+import { Hero } from "../api/heroesApi";
 
-function FullCharacterInfo({ hero, onGoMenu }) {
+interface FullCharacterInfoProps {
+  hero: Hero;
+  onGoMenu: () => void;
+}
+
+function FullCharacterInfo({ hero, onGoMenu }: FullCharacterInfoProps) {
   if (!hero) return null;
 
-  const imageUrl =
+  const heroImageUrl =
     hero.image?.url ||
     `https://via.placeholder.com/600x400?text=${encodeURIComponent(hero.name || "Hero")}`;
 
@@ -21,7 +27,7 @@ function FullCharacterInfo({ hero, onGoMenu }) {
         }}
       >
         <img
-          src={imageUrl}
+          src={heroImageUrl}
           alt={hero.name}
           referrerPolicy="no-referrer"
           style={{
@@ -34,8 +40,8 @@ function FullCharacterInfo({ hero, onGoMenu }) {
             boxShadow: "0 6px 16px rgba(0,0,0,0.06)",
           }}
           onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = `https://via.placeholder.com/600x400?text=${hero.name}`;
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = `https://via.placeholder.com/600x400?text=${hero.name}`;
           }}
         />
       </Paper>
@@ -131,7 +137,7 @@ function FullCharacterInfo({ hero, onGoMenu }) {
         />
         <InfoItem
           label="Alignment"
-          value={formatAlignment(hero.biography?.alignment)}
+          value={formatAlignmentValue(hero.biography?.alignment)}
         />
       </Section>
 
@@ -200,9 +206,9 @@ function FullCharacterInfo({ hero, onGoMenu }) {
             Notable Traits
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-            {hero.features.map((feature, idx) => (
+            {hero.features.map((feature, index) => (
               <Paper
-                key={idx}
+                key={index}
                 sx={{
                   px: 2,
                   py: 1,
@@ -228,7 +234,12 @@ function FullCharacterInfo({ hero, onGoMenu }) {
   );
 }
 
-function Section({ title, children }) {
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Section({ title, children }: SectionProps) {
   return (
     <Box sx={{ mt: 5 }}>
       <Typography
@@ -258,7 +269,12 @@ function Section({ title, children }) {
   );
 }
 
-function InfoItem({ label, value }) {
+interface InfoItemProps {
+  label: string;
+  value: string;
+}
+
+function InfoItem({ label, value }: InfoItemProps) {
   return (
     <Box
       sx={{
@@ -310,13 +326,18 @@ function InfoItem({ label, value }) {
   );
 }
 
-function PowerStat({ name, value }) {
-  let numValue = 0;
+interface PowerStatProps {
+  name: string;
+  value: string | undefined;
+}
+
+function PowerStat({ name, value }: PowerStatProps) {
+  let numericValue = 0;
   if (value && value !== "null") {
     const parsed = parseInt(value);
-    numValue = isNaN(parsed) ? 0 : parsed;
+    numericValue = isNaN(parsed) ? 0 : parsed;
   }
-  const percentage = Math.min(Math.max(numValue, 0), 100);
+  const percentageValue = Math.min(Math.max(numericValue, 0), 100);
 
   return (
     <Box
@@ -377,8 +398,8 @@ function PowerStat({ name, value }) {
             top: 0,
             left: 0,
             height: "100%",
-            width: `${percentage}%`,
-            backgroundColor: getStatColor(percentage),
+            width: `${percentageValue}%`,
+            backgroundColor: getStatColorValue(percentageValue),
             transition: "width 0.4s ease",
             borderRadius: 4,
           }}
@@ -388,15 +409,15 @@ function PowerStat({ name, value }) {
   );
 }
 
-function getStatColor(value) {
-  if (value >= 90) return "#81c784";
-  if (value >= 75) return "#a5d6a7";
-  if (value >= 60) return "#ffb74d";
-  if (value >= 40) return "#ff8a65";
+function getStatColorValue(statValue: number): string {
+  if (statValue >= 90) return "#81c784";
+  if (statValue >= 75) return "#a5d6a7";
+  if (statValue >= 60) return "#ffb74d";
+  if (statValue >= 40) return "#ff8a65";
   return "#e57373";
 }
 
-function formatAlignment(alignment) {
+function formatAlignmentValue(alignment: string | undefined): string {
   if (!alignment) return "Unknown";
   return alignment.charAt(0).toUpperCase() + alignment.slice(1);
 }

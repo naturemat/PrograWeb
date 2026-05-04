@@ -1,7 +1,19 @@
 import Button from "@mui/material/Button";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-function BackButton({ onClick, label = "← Back", size = "medium", fullWidth = false }) {
+interface BackButtonProps {
+  onClick: () => void;
+  label?: string;
+  size?: "small" | "medium" | "large";
+  fullWidth?: boolean;
+}
+
+function BackButton({ 
+  onClick, 
+  label = "← Back", 
+  size = "medium", 
+  fullWidth = false 
+}: BackButtonProps) {
   return (
     <Button
       variant="outlined"

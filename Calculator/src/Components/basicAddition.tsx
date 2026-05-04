@@ -9,13 +9,18 @@ import {
 } from "@mui/material";
 import BackButton from "./BackButton";
 
-export default function BasicAddition({ setView }) {
-  const [number1, setNumber1] = useState("");
-  const [number2, setNumber2] = useState("");
+interface BasicAdditionProps {
+  setView: () => void;
+}
 
-  const handleSum = () => {
-    const sum = Number(number1) + Number(number2);
-    alert("Result: " + sum);
+export default function BasicAddition({ setView }: BasicAdditionProps) {
+  const [firstNumber, setFirstNumber] = useState("");
+  const [secondNumber, setSecondNumber] = useState("");
+  const [calculationResult, setCalculationResult] = useState<number | null>(null);
+
+  const handleAddition = () => {
+    const sum = Number(firstNumber) + Number(secondNumber);
+    setCalculationResult(sum);
   };
 
   return (
@@ -54,8 +59,8 @@ export default function BasicAddition({ setView }) {
           <TextField
             label="Number 1"
             type="number"
-            value={number1}
-            onChange={(e) => setNumber1(e.target.value)}
+            value={firstNumber}
+            onChange={(e) => setFirstNumber(e.target.value)}
             fullWidth
             variant="outlined"
             InputProps={{
@@ -71,8 +76,8 @@ export default function BasicAddition({ setView }) {
           <TextField
             label="Number 2"
             type="number"
-            value={number2}
-            onChange={(e) => setNumber2(e.target.value)}
+            value={secondNumber}
+            onChange={(e) => setSecondNumber(e.target.value)}
             fullWidth
             variant="outlined"
             InputProps={{
@@ -89,7 +94,7 @@ export default function BasicAddition({ setView }) {
             variant="contained"
             color="primary"
             size="large"
-            onClick={handleSum}
+            onClick={handleAddition}
             fullWidth
             sx={{
               mt: 1,
@@ -101,10 +106,26 @@ export default function BasicAddition({ setView }) {
           >
             Calculate Sum
           </Button>
+
+          {calculationResult !== null && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                backgroundColor: "#f0f7f5",
+                borderRadius: 2,
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="h6" color="primary.main">
+                Result: {calculationResult}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4.5 }}>
-          <BackButton onClick={() => setView(false)} label="Back to Menu" />
+          <BackButton onClick={() => setView()} label="Back to Menu" />
         </Box>
       </Paper>
     </Container>

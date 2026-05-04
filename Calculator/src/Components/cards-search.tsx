@@ -10,61 +10,71 @@ import {
   Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { getAllHeroes } from "../api/heroesApi";
+import { getAllHeroes, Hero } from "../api/heroesApi";
 import CharacterCard from "./CharacterCard";
 import CharacterPreview from "./CharacterPreview";
 import FullCharacterInfo from "./FullCharacterInfo";
 import BackButton from "./BackButton";
 
-function CardsSearch({ setView }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [heroes, setHeroes] = useState([]);
-  const [allHeroes, setAllHeroes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState("list");
-  const [selectedHero, setSelectedHero] = useState(null);
+type ViewMode = "list" | "preview" | "full";
+
+interface CardsSearchProps {
+  setView: () => void;
+}
+
+function CardsSearch({ setView }: CardsSearchProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [displayedHeroes, setDisplayedHeroes] = useState<Hero[]>([]);
+  const [allHeroesData, setAllHeroesData] = useState<Hero[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>("list");
+  const [selectedHeroData, setSelectedHeroData] = useState<Hero | null>(null);
 
   useEffect(() => {
-    const loadAll = async () => {
+    const loadHeroesData = async () => {
       try {
-        const all = await getAllHeroes();
-        setHeroes(all);
-        setAllHeroes(all);
+        const heroes = await getAllHeroes();
+        setDisplayedHeroes(heroes);
+        setAllHeroesData(heroes);
       } catch (err) {
-        setError("Failed to load heroes");
+        setErrorMessage("Failed to load heroes");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-    loadAll();
+    loadHeroesData();
   }, []);
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) {
-      setHeroes(allHeroes);
+  const handleSearchAction = () => {
+    if (!searchQuery.trim()) {
+      setDisplayedHeroes(allHeroesData);
       return;
     }
 
-    const filtered = allHeroes.filter((hero) =>
-      hero.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    const filteredHeroes = allHeroesData.filter((hero) =>
+      hero.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    setHeroes(filtered);
+    setDisplayedHeroes(filteredHeroes);
   };
 
-  const handleCardClick = (hero) => {
-    setSelectedHero(hero);
-    setViewMode("preview");
+  const handleHeroSelection = (hero: Hero) => {
+    setSelectedHeroData(hero);
+    setCurrentViewMode("preview");
   };
 
-  const handleBack = () => {
-    setSelectedHero(null);
-    setViewMode("list");
+  const handleGoBack = () => {
+    setSelectedHeroData(null);
+    setCurrentViewMode("list");
   };
 
-  const handleMoreInfo = () => {
-    setViewMode("full");
+  const handleViewFullDetails = () => {
+    setCurrentViewMode("full");
+  };
+
+  const handleReturnToMenu = () => {
+    setView();
   };
 
   return (
@@ -82,7 +92,7 @@ function CardsSearch({ setView }) {
         </Typography>
       </Box>
 
-      {viewMode === "list" && (
+      {currentViewMode === "list" && (
         <Box
           sx={{
             display: "flex",
@@ -94,9 +104,9 @@ function CardsSearch({ setView }) {
           <TextField
             fullWidth
             placeholder="Search by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearchAction()}
             InputProps={{
               sx: {
                 backgroundColor: "#fff",
@@ -109,8 +119,8 @@ function CardsSearch({ setView }) {
           />
           <Button
             variant="contained"
-            onClick={handleSearch}
-            disabled={loading}
+            onClick={handleSearchAction}
+            disabled={isLoading}
             startIcon={<SearchIcon />}
             sx={{
               minWidth: { xs: "100%", sm: "auto" },
@@ -123,7 +133,7 @@ function CardsSearch({ setView }) {
         </Box>
       )}
 
-      {error && (
+      {errorMessage && (
         <Alert
           severity="error"
           sx={{
@@ -131,11 +141,11 @@ function CardsSearch({ setView }) {
             borderRadius: 2,
           }}
         >
-          {error}
+          {errorMessage}
         </Alert>
       )}
 
-      {loading && (
+      {isLoading && (
         <Box
           sx={{
             display: "flex",
@@ -161,7 +171,7 @@ function CardsSearch({ setView }) {
         </Box>
       )}
 
-      {viewMode === "list" && !loading && heroes.length > 0 && (
+      {currentViewMode === "list" && !isLoading && displayedHeroes.length > 0 && (
         <Box
           sx={{
             display: "grid",
@@ -177,17 +187,17 @@ function CardsSearch({ setView }) {
             },
           }}
         >
-          {heroes.map((hero) => (
+          {displayedHeroes.map((hero) => (
             <CharacterCard
-              key={hero.id}
+              key={hero.my_id}
               hero={hero}
-              onClick={() => handleCardClick(hero)}
+              onClick={() => handleHeroSelection(hero)}
             />
           ))}
         </Box>
       )}
 
-      {viewMode === "list" && !loading && heroes.length === 0 && (
+      {currentViewMode === "list" && !isLoading && displayedHeroes.length === 0 && (
         <Paper
           sx={{
             p: 5,
@@ -210,18 +220,18 @@ function CardsSearch({ setView }) {
         </Paper>
       )}
 
-      {viewMode === "preview" && selectedHero && (
+      {currentViewMode === "preview" && selectedHeroData && (
         <CharacterPreview
-          hero={selectedHero}
-          onMoreInfo={handleMoreInfo}
-          onBack={handleBack}
+          hero={selectedHeroData}
+          onMoreInfo={handleViewFullDetails}
+          onBack={handleGoBack}
         />
       )}
 
-      {viewMode === "full" && selectedHero && (
+      {currentViewMode === "full" && selectedHeroData && (
         <FullCharacterInfo
-          hero={selectedHero}
-          onGoMenu={() => setView(false)}
+          hero={selectedHeroData}
+          onGoMenu={handleReturnToMenu}
         />
       )}
     </Container>

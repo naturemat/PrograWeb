@@ -1,35 +1,47 @@
 import { Box, Typography, Button, Chip, Paper } from "@mui/material";
 import BackButton from "./BackButton";
+import { Hero } from "../api/heroesApi";
 
-function CharacterPreview({ hero, onMoreInfo, onBack }) {
+interface ChipData {
+  label: string;
+  color: "default" | "info" | "success" | "error" | "secondary";
+}
+
+interface CharacterPreviewProps {
+  hero: Hero;
+  onMoreInfo: () => void;
+  onBack: () => void;
+}
+
+function CharacterPreview({ hero, onMoreInfo, onBack }: CharacterPreviewProps) {
   if (!hero) return null;
 
-  const imageUrl =
+  const heroImageUrl =
     hero.image?.url ||
     `https://via.placeholder.com/400x400?text=${encodeURIComponent(hero.name || "Hero")}`;
 
-  const keyChips = [];
+  const heroAttributeChips: ChipData[] = [];
 
   if (hero.appearance?.race)
-    keyChips.push({ label: `Race: ${hero.appearance.race}`, color: "default" });
+    heroAttributeChips.push({ label: `Race: ${hero.appearance.race}`, color: "default" });
   if (hero.appearance?.gender)
-    keyChips.push({ label: hero.appearance.gender, color: "info" });
+    heroAttributeChips.push({ label: hero.appearance.gender, color: "info" });
   if (hero.biography?.alignment) {
-    const alignColor =
+    const alignmentColor: "success" | "error" | "default" =
       hero.biography.alignment === "good"
         ? "success"
         : hero.biography.alignment === "evil"
           ? "error"
           : "default";
-    keyChips.push({
+    heroAttributeChips.push({
       label:
         hero.biography.alignment.charAt(0).toUpperCase() +
         hero.biography.alignment.slice(1),
-      color: alignColor,
+      color: alignmentColor,
     });
   }
   if (hero.biography?.publisher)
-    keyChips.push({ label: hero.biography.publisher, color: "secondary" });
+    heroAttributeChips.push({ label: hero.biography.publisher, color: "secondary" });
 
   return (
     <Box>
@@ -58,7 +70,7 @@ function CharacterPreview({ hero, onMoreInfo, onBack }) {
             }}
           >
             <img
-              src={imageUrl}
+              src={heroImageUrl}
               alt={hero.name}
               referrerPolicy="no-referrer"
               style={{
@@ -70,8 +82,8 @@ function CharacterPreview({ hero, onMoreInfo, onBack }) {
                 boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
               }}
               onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://via.placeholder.com/400x400?text=${hero.name}`;
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `https://via.placeholder.com/400x400?text=${hero.name}`;
               }}
             />
           </Box>
@@ -113,13 +125,13 @@ function CharacterPreview({ hero, onMoreInfo, onBack }) {
               {hero.description || `Information about ${hero.name}.`}
             </Typography>
 
-            {keyChips.length > 0 && (
+            {heroAttributeChips.length > 0 && (
               <Box
                 sx={{ mb: 3.5, display: "flex", flexWrap: "wrap", gap: 1.5 }}
               >
-                {keyChips.map((chip, idx) => (
+                {heroAttributeChips.map((chip, index) => (
                   <Chip
-                    key={idx}
+                    key={index}
                     label={chip.label}
                     color={chip.color}
                     variant="outlined"

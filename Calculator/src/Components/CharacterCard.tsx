@@ -1,7 +1,13 @@
 import { Card, CardMedia, CardContent, Typography } from "@mui/material";
+import { Hero } from "../api/heroesApi";
 
-function CharacterCard({ hero, onClick }) {
-  const imageUrl =
+interface CharacterCardProps {
+  hero: Hero;
+  onClick: () => void;
+}
+
+function CharacterCard({ hero, onClick }: CharacterCardProps) {
+  const heroImageUrl =
     hero.image?.url ||
     `https://via.placeholder.com/300x300?text=${encodeURIComponent(hero.name || "Hero")}`;
 
@@ -25,7 +31,7 @@ function CharacterCard({ hero, onClick }) {
     >
       <CardMedia
         component="img"
-        image={imageUrl}
+        image={heroImageUrl}
         alt={hero.name}
         referrerPolicy="no-referrer"
         sx={{
@@ -38,7 +44,7 @@ function CharacterCard({ hero, onClick }) {
           },
         }}
         onError={(e) => {
-          e.target.src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(hero.name)}`;
+          e.currentTarget.src = `https://via.placeholder.com/300x300?text=${encodeURIComponent(hero.name)}`;
         }}
       />
       <CardContent

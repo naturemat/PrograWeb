@@ -8,23 +8,30 @@ import {
   Box,
 } from "@mui/material";
 import theme from "./theme";
-import BasicAddition from "./Components/basicAdittion";
+import BasicAddition from "./Components/basicAddition";
 import Calculator from "./Components/calculator";
 import CardsSearch from "./Components/cards-search";
 
+type ViewType = "home" | "addition" | "calculator" | "cards-search";
+
 function App() {
-  const [view, setView] = useState("home");
+  const [currentView, setCurrentView] = useState<ViewType>("home");
+
+  const navigateToAddition = () => setCurrentView("addition");
+  const navigateToCalculator = () => setCurrentView("calculator");
+  const navigateToHeroesSearch = () => setCurrentView("cards-search");
+  const navigateToHome = () => setCurrentView("home");
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="md" sx={{ py: { xs: 2, md: 4 } }}>
-        {view === "addition" ? (
-          <BasicAddition setView={setView} />
-        ) : view === "calculator" ? (
-          <Calculator setView={setView} />
-        ) : view === "cards-search" ? (
-          <CardsSearch setView={setView} />
+        {currentView === "addition" ? (
+          <BasicAddition setView={navigateToHome} />
+        ) : currentView === "calculator" ? (
+          <Calculator setView={navigateToHome} />
+        ) : currentView === "cards-search" ? (
+          <CardsSearch setView={navigateToHome} />
         ) : (
           <Box
             sx={{
@@ -53,7 +60,7 @@ function App() {
               variant="contained"
               color="primary"
               size="large"
-              onClick={() => setView("addition")}
+              onClick={navigateToAddition}
               sx={{
                 minWidth: { xs: "100%", sm: 280 },
                 py: 1.8,
@@ -69,7 +76,7 @@ function App() {
               variant="contained"
               color="primary"
               size="large"
-              onClick={() => setView("calculator")}
+              onClick={navigateToCalculator}
               sx={{
                 minWidth: { xs: "100%", sm: 280 },
                 py: 1.8,
@@ -85,7 +92,7 @@ function App() {
               variant="contained"
               color="primary"
               size="large"
-              onClick={() => setView("cards-search")}
+              onClick={navigateToHeroesSearch}
               sx={{
                 minWidth: { xs: "100%", sm: 280 },
                 py: 1.8,
